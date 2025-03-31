@@ -139,7 +139,10 @@ if __name__ == "__main__":
     print(f"learnable_y_{config['secret_dim']}_m{config['margin']}")
 
     tokenizer = AutoTokenizer.from_pretrained(config["sentence_encode_model_name"])
-    data_collator = DataCollatorWithPadding(tokenizer)
+    def collate_fn(batch, tokenizer, max_length=48):
+        texts = [item['text'] for item in batch]
+        tokenized_texts = tokenizer(texts, return_tensors='pt', padding='max_length', truncation=True, max_length=max_length)
+        return tokenized_texts
 
     dataset = TextDataset(args.dataset_path)
     subset_length = len(dataset) // 10
@@ -149,8 +152,8 @@ if __name__ == "__main__":
     train_size = len(dataset) - test_size
     train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
-    train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True, num_workers=12, collate_fn=data_collator)
-    test_loader = DataLoader(test_dataset, batch_size=config["batch_size"], shuffle=False, num_workers=12, collate_fn=data_collator)
+    train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True, num_workers=12, collate_fn=lambda batch: collate_fn(batch, tokenizer))
+    test_loader = DataLoader(test_dataset, batch_size=config["batch_size"], shuffle=False, num_workers=12, collate_fn=lambda batch: collate_fn(batch, tokenizer))
 
     model = LearnableYModel(secret_dim=config["secret_dim"], output_dim=config["output_dim"], 
                             sentence_model_name=config["sentence_encode_model_name"], sentence_embed_dim=config["sentence_embed_dim"], 
