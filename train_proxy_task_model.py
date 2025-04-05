@@ -163,4 +163,4 @@ if __name__ == "__main__":
         directory = f"./models/"
         if not os.path.exists(directory):
             os.makedirs(directory)
-        torch.save(model.state_dict(), f'{directory}proxy_model_{config['model']['name'].split('/')[-1]}.pth')
+        torch.save(model.state_dict(), f"{directory}/proxy_model_{config['model']['name'].split('/')[-1]}.pth")
