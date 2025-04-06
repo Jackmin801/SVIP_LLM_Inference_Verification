@@ -5,6 +5,7 @@ secret_batch_size: 4
 num_epochs: 8
 contrastive_loss_weight: 0.1
 margin: 30.0
+threshold: 10.0
 
 # Model Configuration
 model:
