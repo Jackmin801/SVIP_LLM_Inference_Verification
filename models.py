@@ -103,8 +103,11 @@ class TransformerGFWithSecret(nn.Module):
         secret = self.secret_encoder(secret).unsqueeze(1)
         x = torch.cat([secret, x], dim=1)
 
-        if attention_mask is not None:
+        if False: #attention_mask is not None:
+            # TODO: UnboundLocalError: local variable 'src_key_padding_mask' referenced before assignment  
             src_key_padding_mask = torch.cat([torch.zeros((batch_size, 1), dtype=torch.bool, device=src_key_padding_mask.device), src_key_padding_mask], dim=1)
+        else:
+            src_key_padding_mask = None
 
         transformer_output = self.transformer_g(x.transpose(0,1), src_key_padding_mask=src_key_padding_mask)
         output = transformer_output[0, :, :]
