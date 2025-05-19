@@ -15,6 +15,7 @@ from transformers import LlamaTokenizer
 from datasets import load_dataset
 from tqdm import tqdm
 import argparse
+from pathlib import Path
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Preprocess the text dataset")
@@ -70,7 +71,9 @@ def main(args):
                     processed_examples = process_data(text, tokenizer)
                     processed_data.extend(processed_examples)
             
-        output_file = f"{args.output_dir}/{dataset_name.replace('/','__')}_{split}.json"
+        output_dir = Path(args.output_dir)
+        output_file = output_dir / f"{dataset_name.replace('/','__')}_{split}.json"
+        output_dir.mkdir(parents=True, exist_ok=True)
         with open(output_file, "w") as f:
             json.dump(processed_data, f)
 
